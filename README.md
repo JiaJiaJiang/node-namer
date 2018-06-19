@@ -33,7 +33,7 @@ There is an extra special replacement pattern "#COUNTER" which is a counter that
 
 ```shell
     namer -m w.s -f poi                 #remove string matches /poi/ from names that matches /w.s/
-    namer -f p(o+)i -r "$1"             #(special replacement patterns)cut "p" and "i" sticks to the "o"s for files that can be matched
+    namer -f "p(o+)i" -r "$1"           #(special replacement patterns)cut "p" and "i" sticks to the "o"s for files that can be matched
     namer -f /aaaaaa/i -r b             #(ignore case)replace /aaaaaa/i mode to "b" for files that can be matched
     namer -f some*pics\.png -r "#COUNTER.png" #change the names to numbers for some png files that can be matched
 ```
