@@ -1,5 +1,5 @@
 {
-  "name": "filerenamer",
+  "name": "@luojia/filerenamer",
   "version": "0.1.0",
   "description": "rename files using regexp",
   "main": "index.js",
