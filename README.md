@@ -4,7 +4,7 @@ This is a renaming tool works with regexp.
 
 ## Install
 ```
-npm i @luojia/filerenamer -g
+npm i file-renamer -g
 ```
 
 ## Usage
