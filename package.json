@@ -1,5 +1,5 @@
 {
-  "name": "file-renamer",
+  "name": "file-namer",
   "version": "0.1.0",
   "description": "rename files using regexp",
   "main": "index.js",
@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
-    "renamer": "index.js"
+    "namer": "index.js"
   },
   "repository": {
     "type": "git",
