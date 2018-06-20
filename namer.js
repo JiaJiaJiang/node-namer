@@ -50,10 +50,9 @@ var counter=0;
 //match files
 var dirList=fs.readdirSync(cwd);
 //order the list
-if(commander.keepOrder!==true)
-	dirList.sort(function(pre,aft){
-		return pre.length-aft.length;
-	});
+if(commander.keepOrder!==true){
+	sort(dirList);
+}
 console.log("Match list:");
 dirList.forEach(function(name){
 	if(name==='.'||name==='..')return;
@@ -84,7 +83,24 @@ if(commander.yes!==true){
 
 
 //funcitons
-
+function sort(list){
+	for(var on=0;on<list.length;on++){
+		for(var i=0;i<list.length;i++){
+			var r=compare(list[i],list[on]);
+			if(r<=0)continue;
+			list.splice(i,0,list.splice(on,1)[0]);
+		}
+	}
+}
+function compare(pre,nxt){
+	if(pre.length<nxt.length)return -1;
+	if(pre.length==nxt.length){
+		if(pre<nxt)return -1;
+		if(pre==nxt)return 0;
+		return 1;
+	}
+	return 1;
+}
 function parseRegExp(str){
 	var reg,exp,flags;
 	if(reg=str.match(/^\/(.+)\/([ig]*)$/)){
