@@ -15,7 +15,7 @@ Usage: namer [options]
   Options:
 
     -f, --find <rexexp>          Regexp for finding target string (default: /.*/)
-    -r, --replace <replacement>  Replacement string (default: )
+    -r, --replace <replacement>  Replacement string (default: $&)
     -m, --match <rexexp>         Regexp for matching files (default: the same as find)
     --keep-order                 Do not reorder the file list. By default the namer will reorder file names by their length.
     -y, --yes                    Do not ask for confirmation

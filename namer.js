@@ -7,7 +7,7 @@ const Path = require('path');
 
 commander
 .option('-f, --find <rexexp>', 'Regexp for finding target string',parseRegExp,/.*/)
-.option('-r, --replace <replacement>', 'Replacement string',String,'')
+.option('-r, --replace <replacement>', 'Replacement string',String,'$&')
 .option('-m, --match <rexexp>', 'Regexp for matching files (default: the same as find)',parseRegExp)
 .option('--keep-order', 'Do not reorder the file list. By default the namer will reorder file names by their length.')
 .option('-y, --yes', 'Do not ask for confirmation');
@@ -65,7 +65,7 @@ dirList.forEach(function(name){
 });
 console.log('\n');
 if(replaceList.length===0){
-	console.log("no files matched");
+	console.log("No files matched");
 	return;
 }else{
 	console.log(replaceList.length+"matches found.");
@@ -114,16 +114,22 @@ function parseRegExp(str){
 	return r;
 }
 function startReplace(){
-	var success=0,failed=0;
+	var changed=0,failed=0,skiped=0;
 	replaceList.forEach(function(names){
+		if(names[0]===names[1]){
+			skiped++;
+			continue;
+		}
 		try{
 			fs.renameSync(Path.resolve(cwd,names[0]),Path.resolve(cwd,names[1]));
-			success++;
+			changed++;
 		}catch(e){
 			failed++;
 			console.error(e.message);
 		}
 	});
-	console.log("Finished. "+success+"succeeded,"+failed+"failed");
-	// process.exit(0);
+	console.log("Finished.");
+	if(changed)console.log(changed+"changed");
+	if(skiped)console.log(skiped+"skiped");
+	if(failed)console.log(failed+"failed");
 }
