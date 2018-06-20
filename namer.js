@@ -118,7 +118,7 @@ function startReplace(){
 	replaceList.forEach(function(names){
 		if(names[0]===names[1]){
 			skiped++;
-			continue;
+			return;
 		}
 		try{
 			fs.renameSync(Path.resolve(cwd,names[0]),Path.resolve(cwd,names[1]));
