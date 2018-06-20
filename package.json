@@ -2,12 +2,12 @@
   "name": "file-namer",
   "version": "0.1.2",
   "description": "rename files using regexp",
-  "main": "index.js",
+  "main": "namer.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
-    "namer": "index.js"
+    "namer": "namer.js"
   },
   "repository": {
     "type": "git",
