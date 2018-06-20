@@ -24,7 +24,7 @@ Usage: namer [options]
 
 Regexps in the parameters can be with or without // warper(The wraper can be used when you need regexp flags "i" or "g").
 
-You may need to add "\" before some signs in your command environment.
+You may need to add "\\" before some signs in your command environment.
 
 The replacement will become the second parameter of string.replace function in javascript. So several special signs can be used.
 
