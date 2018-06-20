@@ -42,7 +42,7 @@ dirList.forEach(function(name){
 	if(name.match(commander.match)){
 		counter++;
 		var newName=name.replace(commander.find,commander.replace).replace(/\#COUNTER/g,counter);
-		console.log(name,"\n   > "+newName);
+		console.log(name,"		>		"+newName);
 		replaceList.push([name,newName]);
 	}
 });
