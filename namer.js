@@ -6,9 +6,9 @@ const readline = require('readline');
 const Path = require('path');
 
 commander
-.option('-f, --find <rexexp>', 'Regexp for finding target string',parseRegExp,/.*/)
+.option('-f, --find <regexp>', 'Regexp for finding target string',parseRegExp,/.*/)
 .option('-r, --replace <replacement>', 'Replacement string',String,'$&')
-.option('-m, --match <rexexp>', 'Regexp for matching files (default: the same as find)',parseRegExp)
+.option('-m, --match <regexp>', 'Regexp for matching files (default: the same as find)',parseRegExp)
 .option('--keep-order', 'Do not reorder the file list. By default the namer will reorder file names by their length.')
 .option('-y, --yes', 'Do not ask for confirmation');
 commander.on('--help', function(){

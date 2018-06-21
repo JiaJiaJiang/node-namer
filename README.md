@@ -14,9 +14,9 @@ Usage: namer [options]
 
   Options:
 
-    -f, --find <rexexp>          Regexp for finding target string (default: /.*/)
+    -f, --find <regexp>          Regexp for finding target string (default: /.*/)
     -r, --replace <replacement>  Replacement string (default: $&)
-    -m, --match <rexexp>         Regexp for matching files (default: the same as find)
+    -m, --match <regexp>         Regexp for matching files (default: the same as find)
     --keep-order                 Do not reorder the file list. By default the namer will reorder file names by their length.
     -y, --yes                    Do not ask for confirmation
     -h, --help                   output usage information
@@ -35,7 +35,7 @@ Special javascript replacement patterns
     $&            Inserts the matched substring
     $`            Inserts the portion of the string that precedes the matched substring
     $'            Inserts the portion of the string that follows the matched substring
-    $n            Insert the nth submatch group, from 1 ot 100
+    $n            Inserts the nth submatch group, from 1 ot 100
 Extra replacement patterns
     #COUNTER      Inserts a counter number which is the index of the file in the match list (starts from 1)
 ```
@@ -46,5 +46,5 @@ Extra replacement patterns
     namer -m w.s -f poi                        #remove string matches /poi/ from names that matches /w.s/
     namer -f "p(o+)i" -r "$1"                  #(special replacement patterns)cut "p" and "i" sticks to the "o"s for files that can be matched
     namer -f /aaaaaa/i -r b                    #(ignore case)replace /aaaaaa/i mode to "b" for files that can be matched
-    namer -f some*pics\.png -r "#COUNTER.png"  #change the names to numbers for some png files that can be matched
+    namer -f some.*pics\\.png -r "#COUNTER.png"#change the names to numbers for some png files that can be matched
 ```
