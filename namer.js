@@ -7,7 +7,7 @@ const Path = require('path');
 
 commander
 .option('-f, --find <regexp>', 'Regexp for finding target string',parseRegExp,/.*/)
-.option('-r, --replace <replacement>', 'Replacement string',String,'$&')
+.option('-r, --replace <replacement>', 'Replacement string',String,'')
 .option('-m, --match <regexp>', 'Regexp for matching files (default: the same as find)',parseRegExp)
 .option('--keep-order', 'Do not reorder the file list. By default the namer will reorder file names by their length.')
 .option('-y, --yes', 'Do not ask for confirmation');
@@ -25,11 +25,11 @@ commander.on('--help', function(){
 		'    $\'            Inserts the portion of the string that follows the matched substring',
 		'    $n            Insert the nth submatch group, from 1 ot 100',
 		'  Extra replacement patterns',
-		'    #COUNTER      Inserts a counter number which is the index of the file in the match list (starts from 1)',
+		'    #COUNTER      Inserts a counter number which is the index of the file in the file list (starts from 1)',
 		'',
 		'  Examples:',
 		'',
-		'    namer -m w.s -f poi                        #remove string matches /poi/ from names that matches /w.s/',
+		'    namer -m w.s -f poi                        #remove string not matches /w.s/ in which file name matches /poi/',
 		'    namer -f "p(o+)i" -r "$1"                  #(special replacement patterns)cut "p" and "i" sticks to the "o"s for files that can be matched',
 		'    namer -f /aaaaaa/i -r b                    #(ignore case)replace /aaaaaa/i mode to "b" for files that can be matched',
 		'    namer -f some*pics\\.png -r "#COUNTER.png"  #change the names to numbers for some png files that can be matched',
@@ -53,12 +53,12 @@ var dirList=fs.readdirSync(cwd);
 if(commander.keepOrder!==true){
 	sort(dirList);
 }
-console.log("Match list:");
+console.log("File list:");
 dirList.forEach(function(name){
 	if(name==='.'||name==='..')return;
-	if(name.match(commander.match)){
+	if(name.match(commander.find)){
 		counter++;
-		var newName=name.replace(commander.find,commander.replace).replace(/\#COUNTER/g,counter);
+		var newName=name.replace(commander.match,commander.replace).replace(/\#COUNTER/g,counter);
 		console.log(name,"\t>\t"+newName);
 		replaceList.push([name,newName]);
 	}
@@ -68,7 +68,7 @@ if(replaceList.length===0){
 	console.log("No files matched");
 	return;
 }else{
-	console.log(replaceList.length+"matches found.");
+	console.log(replaceList.length+"files found.");
 }
 if(commander.yes!==true){
 	const rl = readline.createInterface({
