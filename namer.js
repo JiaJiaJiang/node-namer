@@ -90,7 +90,7 @@ function findIn(dir){
 		if(name.match(commander.filter)){
 			counter++;
 			var newName=name.replace(commander.match,commander.replace).replace(/\#COUNTER/g,counter);
-			console.log(`${'\t'.repeat(tabs)}| ${name}`,`\n${'\t'.repeat(tabs+1)}\\ `+newName);
+			console.log(`${'\t'.repeat(tabs)}| ${name}`,`\n${'\t'.repeat(tabs)}\\ `+newName);
 			replaceList.push([Path.resolve(dir,name),Path.resolve(dir,newName)]);
 		}
 	});
