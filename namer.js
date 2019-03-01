@@ -42,8 +42,8 @@ commander.on('--help', function(){
 commander.parse(process.argv);
 
 //set match to find if not set
-if(commander.match===undefined)commander.match=commander.find;
-console.log('match:',commander.match,"  find:",commander.find,"  replacement:",commander.replace);
+if(commander.match===undefined)commander.match=commander.filter;
+console.log('match:',commander.match,"  filter:",commander.filter,"  replacement:",commander.replace);
 
 var replaceList=[];
 var counter=0;
@@ -87,7 +87,7 @@ function findIn(dir){
 		if(stat.isDirectory()&&commander.recursive){
 			findIn(fpath);
 		}
-		if(name.match(commander.find)){
+		if(name.match(commander.filter)){
 			counter++;
 			var newName=name.replace(commander.match,commander.replace).replace(/\#COUNTER/g,counter);
 			console.log(`${'\t'.repeat(tabs)}| ${name}`,`\n${'\t'.repeat(tabs+1)}\\ `+newName);
