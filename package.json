@@ -1,6 +1,6 @@
 {
   "name": "file-namer",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "description": "rename files using regexp",
   "main": "namer.js",
   "scripts": {
