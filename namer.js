@@ -79,7 +79,7 @@ function findIn(dir){
 		sort(dirList);
 	}
 	let r;
-	let tabs=(r=dir.match(new RegExp(`\\${path.sep}`,'g')))?r.length:0;
+	let tabs=(r=dir.match(new RegExp(`\\${Path.sep}`,'g')))?r.length:0;
 	dirList.forEach(function(name){
 		if(name==='.'||name==='..')return;
 		let fpath=Path.resolve(dir,name);
