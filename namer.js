@@ -6,9 +6,10 @@ const readline = require('readline');
 const Path = require('path');
 
 commander
-.option('-f, --find <regexp>', 'Regexp for finding target string',parseRegExp,/.*/)
+.option('-R, --recursive', 'Match child directories recursively')
+.option('-f, --filter <regexp>', 'Filter for finding target files',parseRegExp,/.*/)
 .option('-r, --replace <replacement>', 'Replacement string',String,'')
-.option('-m, --match <regexp>', 'Regexp for matching files (default: the same as find)',parseRegExp)
+.option('-m, --match <regexp>', 'Regexp for matching strings to be replaced (default: the same as filter)',parseRegExp)
 .option('--keep-order', 'Do not reorder the file list. By default the namer will reorder file names by their length.')
 .option('-y, --yes', 'Do not ask for confirmation');
 commander.on('--help', function(){
@@ -45,24 +46,11 @@ if(commander.match===undefined)commander.match=commander.find;
 console.log('match:',commander.match,"  find:",commander.find,"  replacement:",commander.replace);
 
 var replaceList=[];
-var cwd=process.cwd();
 var counter=0;
-//match files
-var dirList=fs.readdirSync(cwd);
-//order the list
-if(commander.keepOrder!==true){
-	sort(dirList);
-}
+var workRoot='.';
+//find files
 console.log("File list:");
-dirList.forEach(function(name){
-	if(name==='.'||name==='..')return;
-	if(name.match(commander.find)){
-		counter++;
-		var newName=name.replace(commander.match,commander.replace).replace(/\#COUNTER/g,counter);
-		console.log(name,"\t>\t"+newName);
-		replaceList.push([name,newName]);
-	}
-});
+findIn(workRoot);
 console.log('\n');
 if(replaceList.length===0){
 	console.log("No files matched");
@@ -83,6 +71,30 @@ if(commander.yes!==true){
 
 
 //funcitons
+function findIn(dir){
+	//match files
+	var dirList=fs.readdirSync(dir);
+	//order the list
+	if(commander.keepOrder!==true){
+		sort(dirList);
+	}
+	let r;
+	let tabs=(r=dir.match(new RegExp(`\\${path.sep}`,'g')))?r.length:0;
+	dirList.forEach(function(name){
+		if(name==='.'||name==='..')return;
+		let fpath=Path.resolve(dir,name);
+		let stat=fs.statSync(fpath);
+		if(stat.isDirectory()&&commander.recursive){
+			findIn(fpath);
+		}
+		if(name.match(commander.find)){
+			counter++;
+			var newName=name.replace(commander.match,commander.replace).replace(/\#COUNTER/g,counter);
+			console.log(`${'\t'.repeat(tabs)}| ${name}`,`\n${'\t'.repeat(tabs+1)}\\ `+newName);
+			replaceList.push([Path.resolve(dir,name),Path.resolve(dir,newName)]);
+		}
+	});
+}
 function sort(list){
 	for(var on=0;on<list.length;on++){
 		for(var i=0;i<list.length;i++){
@@ -114,22 +126,29 @@ function parseRegExp(str){
 	return r;
 }
 function startReplace(){
-	var changed=0,failed=0,skiped=0;
-	replaceList.forEach(function(names){
+	var changed=0,failed=[],skiped=[];
+	//resort the list to rename child dirs first
+	replaceList.sort((a,b)=>b.length-a.length).forEach(function(names){
 		if(names[0]===names[1]){
 			skiped++;
 			return;
 		}
 		try{
-			fs.renameSync(Path.resolve(cwd,names[0]),Path.resolve(cwd,names[1]));
+			fs.renameSync(paths[0],paths[1]);
 			changed++;
 		}catch(e){
-			failed++;
+			failed.push([paths[0],paths[1]]);
 			console.error(e.message);
 		}
 	});
 	console.log("Finished.");
-	if(changed)console.log(changed+"changed");
-	if(skiped)console.log(skiped+"skiped");
-	if(failed)console.log(failed+"failed");
+	if(changed)console.log(changed+" changed");
+	if(skiped)console.log(skiped+" skiped");
+	if(failed){
+		console.log(failed.length+" failed");
+		console.log('Failed list:');
+		for(let p of failed){
+			console.log(p[0],'\n\t> '+p[1]);
+		}
+	}
 }

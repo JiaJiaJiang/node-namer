@@ -14,9 +14,10 @@ Usage: namer [options]
 
   Options:
 
-    -f, --find <regexp>          Regexp for finding target string (default: /.*/)
+    -R, --recursive              Match child directories recursively
+    -f, --filter <regexp>        Filter for finding target files (default: /.*/)
     -r, --replace <replacement>  Replacement string (default: "")
-    -m, --match <regexp>         Regexp for matching files (default: the same as find)
+    -m, --match <regexp>         Regexp for matching strings to be replaced (default: the same as filter)
     --keep-order                 Do not reorder the file list. By default the namer will reorder file names by their length.
     -y, --yes                    Do not ask for confirmation
     -h, --help                   output usage information
