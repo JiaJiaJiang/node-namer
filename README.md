@@ -17,7 +17,7 @@ Usage: namer [options]
     -R, --recursive              Match child directories recursively
     -f, --filter <regexp>        Filter for finding target files (default: same as --match)
     -r, --replace <replacement>  Replacement string (default: "")
-   -m, --match <regexp>         Regexp for matching strings to be replaced (default: "/.*/")
+    -m, --match <regexp>         Regexp for matching strings to be replaced (default: "/.*/")
     --keep-order                 Do not reorder the file list. By default the namer will reorder file names by their length.
     -y, --yes                    Do not ask for confirmation
     -h, --help                   output usage information
@@ -46,8 +46,8 @@ Extra replacement patterns
 ### Examples:
 
 ```shell
-    namer -m w.s -f poi                        #remove string not matches /w.s/ in which file name matches /poi/
-    namer -f "p(o+)i" -r "$1"                  #(special replacement patterns)cut "p" and "i" sticks to the "o"s for files that can be matched
-    namer -f /aaaaaa/i -r b                    #(ignore case)replace /aaaaaa/i mode to "b" for files that can be matched
-    namer -f some.*pics\\.png -r "#COUNTER.png"#change the names to numbers for some png files that can be matched
+namer -m w.s -f poi                        #remove string not matches /w.s/ in which file name matches /poi/
+namer -f "p(o+)i" -r "$1"                  #(special replacement patterns)cut "p" and "i" sticks to the "o"s for files that can be matched
+namer -f /aaaaaa/i -r b                    #(ignore case)replace /aaaaaa/i mode to "b" for files that can be matched
+namer -f some.*pics\\.png -r "#COUNTER.png"#change the names to numbers for some png files that can be matched
 ```
