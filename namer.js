@@ -7,14 +7,15 @@ const Path = require('path');
 
 commander
 .option('-R, --recursive', 'Match child directories recursively')
-.option('-f, --filter <regexp>', 'Filter for finding target files',parseRegExp,/.*/)
+.option('-f, --filter <regexp>', 'Filter for finding target files (default: same as --match)',parseRegExp)
 .option('-r, --replace <replacement>', 'Replacement string',String,'')
-.option('-m, --match <regexp>', 'Regexp for matching strings to be replaced (default: the same as filter)',parseRegExp)
+.option('-m, --match <regexp>', 'Regexp for matching strings to be replaced',parseRegExp,"/.*/")
 .option('--keep-order', 'Do not reorder the file list. By default the namer will reorder file names by their length.')
 .option('-y, --yes', 'Do not ask for confirmation');
 commander.on('--help', function(){
 	[
 		'',
+		' This tool replaces matches to replacements on filtered files',
 		'    Regexps in the parameters can be with or without // warper(The wraper can be used when you need regexp flags "i" or "g").',
 		'    You may need to add "\\" before some signs in your command environment.',
 		'    The replacement will become the second parameter of string.replace function in javascript. So several special signs can be used.',
@@ -42,8 +43,8 @@ commander.on('--help', function(){
 commander.parse(process.argv);
 
 //set match to find if not set
-if(commander.match===undefined)commander.match=commander.filter;
-console.log('match:',commander.match,"  filter:",commander.filter,"  replacement:",commander.replace);
+if(commander.filter===undefined)commander.filter=commander.match;
+console.log('filter:',commander.filter,"  match:",commander.match,"  replacement:",commander.replace);
 
 var replaceList=[];
 var counter=0;
@@ -52,11 +53,11 @@ var workRoot='.';
 console.log("File list:");
 findIn(workRoot);
 console.log('\n');
-if(replaceList.length===0){
+if(counter===0){
 	console.log("No files matched");
 	return;
 }else{
-	console.log(replaceList.length+"files found.");
+	console.log(counter+" files found, "+replaceList.length+" names will be changed.");
 }
 if(commander.yes!==true){
 	const rl = readline.createInterface({
@@ -69,7 +70,7 @@ if(commander.yes!==true){
 	});
 }else{startReplace();}
 
-
+// var loggedDir=new Set();
 //funcitons
 function findIn(dir){
 	//match files
@@ -80,18 +81,25 @@ function findIn(dir){
 	}
 	let r;
 	let tabs=(r=dir.match(new RegExp(`\\${Path.sep}`,'g')))?r.length:0;
+	let dirLogged=false;
 	dirList.forEach(function(name){
 		if(name==='.'||name==='..')return;
-		let fpath=Path.resolve(dir,name);
-		let stat=fs.statSync(fpath);
-		if(stat.isDirectory()&&commander.recursive){
-			findIn(fpath);
-		}
+		let fpath=Path.join(dir,name);
 		if(name.match(commander.filter)){
 			counter++;
 			var newName=name.replace(commander.match,commander.replace).replace(/\#COUNTER/g,counter);
-			console.log(`${'\t'.repeat(tabs)}| ${name}`,`\n${'\t'.repeat(tabs)}\\ `+newName);
-			replaceList.push([Path.resolve(dir,name),Path.resolve(dir,newName)]);
+			if(name!==newName){
+				if(!dirLogged){
+					console.log('|   '.repeat(tabs)+'[Dir: '+dir+']');
+					dirLogged=true;
+				}
+				console.log(`${'|   '.repeat(tabs+1)}${name}`,`\n${'|   '.repeat(tabs+1)}  |->  `+newName);
+				replaceList.push([Path.join(dir,name),Path.join(dir,newName)]);
+			}
+		}
+		let stat=fs.statSync(fpath);
+		if(stat.isDirectory()&&commander.recursive){
+			findIn(fpath);
 		}
 	});
 }
@@ -126,29 +134,29 @@ function parseRegExp(str){
 	return r;
 }
 function startReplace(){
-	var changed=0,failed=[],skiped=[];
+	var changed=0,failed=[],skiped=0;
 	//resort the list to rename child dirs first
-	replaceList.sort((a,b)=>b.length-a.length).forEach(function(names){
+	replaceList.sort((a,b)=>b[0].length-a[0].length).forEach(function(names){
 		if(names[0]===names[1]){
 			skiped++;
 			return;
 		}
 		try{
-			fs.renameSync(paths[0],paths[1]);
+			fs.renameSync(names[0],names[1]);
 			changed++;
 		}catch(e){
-			failed.push([paths[0],paths[1]]);
+			failed.push([names[0],names[1]]);
 			console.error(e.message);
 		}
 	});
 	console.log("Finished.");
 	if(changed)console.log(changed+" changed");
 	if(skiped)console.log(skiped+" skiped");
-	if(failed){
+	if(failed.length){
 		console.log(failed.length+" failed");
 		console.log('Failed list:');
 		for(let p of failed){
-			console.log(p[0],'\n\t> '+p[1]);
+			console.log(p[0],'\n |-> '+p[1]);
 		}
 	}
 }

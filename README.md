@@ -15,13 +15,15 @@ Usage: namer [options]
   Options:
 
     -R, --recursive              Match child directories recursively
-    -f, --filter <regexp>        Filter for finding target files (default: /.*/)
+    -f, --filter <regexp>        Filter for finding target files (default: same as --match)
     -r, --replace <replacement>  Replacement string (default: "")
-    -m, --match <regexp>         Regexp for matching strings to be replaced (default: the same as filter)
+   -m, --match <regexp>         Regexp for matching strings to be replaced (default: "/.*/")
     --keep-order                 Do not reorder the file list. By default the namer will reorder file names by their length.
     -y, --yes                    Do not ask for confirmation
     -h, --help                   output usage information
 ```
+
+This tool replaces matches to replacements on filtered files.
 
 Regexps in the parameters can be with or without // warper(The wraper can be used when you need regexp flags "i" or "g").
 
