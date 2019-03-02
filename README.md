@@ -10,8 +10,6 @@ npm i file-namer -g
 ## Usage
 
 ```plain
-Usage: namer [options]
-
 Options:
   -R, --recursive              Match child directories recursively
   -f, --filter <regexp>        Filter for finding target files (default: same as --match)
@@ -19,6 +17,8 @@ Options:
   -m, --match <regexp>         Regexp for matching strings to be replaced (default: "/.*/")
   --keep-order                 Do not reorder the file list. By default the namer will reorder file names by their length.
   -y, --yes                    Do not ask for confirmation
+  --no-folder                  Do not change folder's name.
+  --no-file                    Do not change file's name.
   -h, --help                   output usage information
 
 
@@ -45,12 +45,12 @@ Options:
     #find files match /p(o+)i/ and replace /p(o+)i/ with '$1'(content matched in the brackets)
         namer -m 'p(o+)i' -r '$1'
 
-    #find files match /aaaaaa/i(ignore case) and replace /aaaaaa/i with 'b'
-        namer -m '/aaaaaa/i' -r b
+    #find files match /aaaaaa/ig(ignore case and match the whole name) and replace /aaaaaa/ig with 'b'
+        namer -m '/aaaaaa/ig' -r b
 
     #find some png files and re-number them
         namer -m '.png$' -r '#COUNTER.png'
-        
+    
 
 ```
 

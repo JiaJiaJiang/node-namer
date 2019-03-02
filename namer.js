@@ -11,7 +11,9 @@ commander
 .option('-r, --replace <replacement>', 'Replacement string',String,'')
 .option('-m, --match <regexp>', 'Regexp for matching strings to be replaced',parseRegExp,"/.*/")
 .option('--keep-order', 'Do not reorder the file list. By default the namer will reorder file names by their length.')
-.option('-y, --yes', 'Do not ask for confirmation');
+.option('-y, --yes', 'Do not ask for confirmation')
+.option('--no-folder', 'Do not change folder\'s name.',false)
+.option('--no-file', 'Do not change file\'s name.',false);
 commander.on('--help', function(){
 console.log(
 `
@@ -51,7 +53,6 @@ console.log(
 
 
 commander.parse(process.argv);
-
 //set match to find if not set
 if(commander.filter===undefined)commander.filter=commander.match;
 console.log('filter:',commander.filter,"  match:",commander.match,"  replacement:",commander.replace);
@@ -91,7 +92,9 @@ function findIn(dir){
 	dirList.forEach(function(name){
 		if(name==='.'||name==='..')return;
 		let fpath=`${dir}/${name}`;
-		if(name.match(commander.filter)){
+		let stat=fs.statSync(fpath);
+		if((!commander.folder&&stat.isDirectory()) || (!commander.file&&stat.isFile())){}
+		else if(name.match(commander.filter)){
 			counter++;
 			var newName=name.replace(commander.match,commander.replace).replace(/\#COUNTER/g,counter);
 			if(name!==newName){
@@ -99,11 +102,10 @@ function findIn(dir){
 					console.log('|   '.repeat(tabs)+'[Dir: '+dir+']');
 					dirLogged=true;
 				}
-				console.log(`${'|   '.repeat(tabs+1)}${name}`,`\n${'|   '.repeat(tabs+1)}  ＊> `+newName);
+				console.log(`${'|   '.repeat(tabs+1)}<${name}>`,`\n${'|   '.repeat(tabs+1)} ＊ `+newName);
 				replaceList.push([Path.join(dir,name),Path.join(dir,newName)]);
 			}
 		}
-		let stat=fs.statSync(fpath);
 		if(stat.isDirectory()&&commander.recursive){
 			findIn(fpath);
 		}
