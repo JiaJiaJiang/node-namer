@@ -81,7 +81,12 @@ if(commander.yes!==true){
 //funcitons
 function findIn(dir){
 	//match files
-	var dirList=fs.readdirSync(dir);
+	try{
+		var dirList=fs.readdirSync(dir);
+	}catch(e){
+		console.error('Failed to scan '+dir,`[${e.message}]`);
+		return;
+	}
 	//order the list
 	if(commander.keepOrder!==true){
 		sort(dirList);
@@ -92,7 +97,12 @@ function findIn(dir){
 	dirList.forEach(function(name){
 		if(name==='.'||name==='..')return;
 		let fpath=`${dir}/${name}`;
-		let stat=fs.statSync(fpath);
+		try{
+			var stat=fs.statSync(fpath);
+		}catch(e){
+			console.error('Failed to get stat of '+fpath,`[${e.message}]`);
+			return;
+		}
 		if((!commander.folder&&stat.isDirectory()) || (!commander.file&&stat.isFile())){}
 		else if(name.match(commander.filter)){
 			counter++;
@@ -102,7 +112,7 @@ function findIn(dir){
 					console.log('|   '.repeat(tabs)+'[Dir: '+dir+']');
 					dirLogged=true;
 				}
-				console.log(`${'|   '.repeat(tabs+1)}<${name}>`,`\n${'|   '.repeat(tabs+1)} ＊ `+newName);
+				console.log(`${'|   '.repeat(tabs+1)}<${name}>`,`\n${'|   '.repeat(tabs+1)} → `+newName);
 				replaceList.push([Path.join(dir,name),Path.join(dir,newName)]);
 			}
 		}
