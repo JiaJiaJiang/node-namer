@@ -13,30 +13,40 @@ commander
 .option('--keep-order', 'Do not reorder the file list. By default the namer will reorder file names by their length.')
 .option('-y, --yes', 'Do not ask for confirmation');
 commander.on('--help', function(){
-	[
-		'',
-		' This tool replaces matches to replacements on filtered files',
-		'    Regexps in the parameters can be with or without // warper(The wraper can be used when you need regexp flags "i" or "g").',
-		'    You may need to add "\\" before some signs in your command environment.',
-		'    The replacement will become the second parameter of string.replace function in javascript. So several special signs can be used.',
-		'',
-		'  Special javascript replacement patterns',
-		'    $$            Inserts a "$"',
-		'    $&            Inserts the matched substring',
-		'    $`            Inserts the portion of the string that precedes the matched substring',
-		'    $\'            Inserts the portion of the string that follows the matched substring',
-		'    $n            Insert the nth submatch group, from 1 ot 100',
-		'  Extra replacement patterns',
-		'    #COUNTER      Inserts a counter number which is the index of the file in the file list (starts from 1)',
-		'',
-		'  Examples:',
-		'',
-		'    namer -m w.s -f poi                        #remove string not matches /w.s/ in which file name matches /poi/',
-		'    namer -f "p(o+)i" -r "$1"                  #(special replacement patterns)cut "p" and "i" sticks to the "o"s for files that can be matched',
-		'    namer -f /aaaaaa/i -r b                    #(ignore case)replace /aaaaaa/i mode to "b" for files that can be matched',
-		'    namer -f some*pics\\.png -r "#COUNTER.png"  #change the names to numbers for some png files that can be matched',
-		'',
-	].forEach(function(l){console.log(l)});
+console.log(
+`
+
+ This tool replaces matches to replacements on filtered files
+    Regexps in the parameters can be with or without // surrounded(This can be used when you need regexp flags "i" or "g").
+    You may need to add "\\" before some signs in your command environment.
+    You may need to surround the regexp with \'\' if special sign appears.
+    The replacement will become the second parameter of \'string.replace\' function in javascript. So several special signs can be used.
+
+  Special javascript replacement patterns
+    $$            Inserts a "$"
+    $&            Inserts the matched substring
+    $\`            Inserts the portion of the string that precedes the matched substring
+    $\'            Inserts the portion of the string that follows the matched substring
+    $n            Insert the nth submatch group, from 1 ot 100
+  Extra replacement patterns
+    #COUNTER      Inserts a counter number which is the index of the file in the filter list (starts from 1)
+
+  Examples:
+
+    #find files match /poi/ and replace /w.s/ with ''
+        namer -f poi -m w.s
+
+    #find files match /p(o+)i/ and replace /p(o+)i/ with '$1'(content matched in the brackets)
+        namer -m 'p(o+)i' -r '$1'
+
+    #find files match /aaaaaa/ig(ignore case and match the whole name) and replace /aaaaaa/ig with 'b'
+        namer -m '/aaaaaa/ig' -r b
+
+    #find some png files and re-number them
+        namer -m '\.png$' -r '#COUNTER.png'
+		
+`
+)
 });
 
 
@@ -50,15 +60,12 @@ var replaceList=[];
 var counter=0;
 var workRoot='.';
 //find files
-console.log("File list:");
+console.log("Change list:");
 findIn(workRoot);
 console.log('\n');
-if(counter===0){
-	console.log("No files matched");
-	return;
-}else{
-	console.log(counter+" files found, "+replaceList.length+" names will be changed.");
-}
+
+console.log(counter+" files found, "+replaceList.length+" names will be changed.");
+if(replaceList.length===0)return;
 if(commander.yes!==true){
 	const rl = readline.createInterface({
 	  input: process.stdin,
@@ -70,7 +77,6 @@ if(commander.yes!==true){
 	});
 }else{startReplace();}
 
-// var loggedDir=new Set();
 //funcitons
 function findIn(dir){
 	//match files
@@ -84,7 +90,7 @@ function findIn(dir){
 	let dirLogged=false;
 	dirList.forEach(function(name){
 		if(name==='.'||name==='..')return;
-		let fpath=Path.join(dir,name);
+		let fpath=`${dir}/${name}`;
 		if(name.match(commander.filter)){
 			counter++;
 			var newName=name.replace(commander.match,commander.replace).replace(/\#COUNTER/g,counter);
@@ -93,7 +99,7 @@ function findIn(dir){
 					console.log('|   '.repeat(tabs)+'[Dir: '+dir+']');
 					dirLogged=true;
 				}
-				console.log(`${'|   '.repeat(tabs+1)}${name}`,`\n${'|   '.repeat(tabs+1)}  |->  `+newName);
+				console.log(`${'|   '.repeat(tabs+1)}${name}`,`\n${'|   '.repeat(tabs+1)}  ＊> `+newName);
 				replaceList.push([Path.join(dir,name),Path.join(dir,newName)]);
 			}
 		}
@@ -156,7 +162,7 @@ function startReplace(){
 		console.log(failed.length+" failed");
 		console.log('Failed list:');
 		for(let p of failed){
-			console.log(p[0],'\n |-> '+p[1]);
+			console.log(p[0],'\n x-> '+p[1]);
 		}
 	}
 }

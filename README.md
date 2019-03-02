@@ -9,45 +9,48 @@ npm i file-namer -g
 
 ## Usage
 
-```	
+```plain
 Usage: namer [options]
 
-  Options:
+Options:
+  -R, --recursive              Match child directories recursively
+  -f, --filter <regexp>        Filter for finding target files (default: same as --match)
+  -r, --replace <replacement>  Replacement string (default: "")
+  -m, --match <regexp>         Regexp for matching strings to be replaced (default: "/.*/")
+  --keep-order                 Do not reorder the file list. By default the namer will reorder file names by their length.
+  -y, --yes                    Do not ask for confirmation
+  -h, --help                   output usage information
 
-    -R, --recursive              Match child directories recursively
-    -f, --filter <regexp>        Filter for finding target files (default: same as --match)
-    -r, --replace <replacement>  Replacement string (default: "")
-    -m, --match <regexp>         Regexp for matching strings to be replaced (default: "/.*/")
-    --keep-order                 Do not reorder the file list. By default the namer will reorder file names by their length.
-    -y, --yes                    Do not ask for confirmation
-    -h, --help                   output usage information
-```
 
-This tool replaces matches to replacements on filtered files.
+ This tool replaces matches to replacements on filtered files
+    Regexps in the parameters can be with or without // surrounded(This can be used when you need regexp flags "i" or "g").
+    You may need to add "\" before some signs in your command environment.
+    You may need to surround the regexp with '' if special sign appears.
+    The replacement will become the second parameter of 'string.replace' function in javascript. So several special signs can be used.
 
-Regexps in the parameters can be with or without // warper(The wraper can be used when you need regexp flags "i" or "g").
-
-You may need to add "\\" before some signs in your command environment.
-
-The replacement will become the second parameter of string.replace function in javascript. So several special signs can be used.
-
-### Patterns
-```
-Special javascript replacement patterns
+  Special javascript replacement patterns
     $$            Inserts a "$"
     $&            Inserts the matched substring
     $`            Inserts the portion of the string that precedes the matched substring
     $'            Inserts the portion of the string that follows the matched substring
-    $n            Inserts the nth submatch group, from 1 ot 100
-Extra replacement patterns
-    #COUNTER      Inserts a counter number which is the index of the file in the match list (starts from 1)
+    $n            Insert the nth submatch group, from 1 ot 100
+  Extra replacement patterns
+    #COUNTER      Inserts a counter number which is the index of the file in the filter list (starts from 1)
+
+  Examples:
+
+    #find files match /poi/ and replace /w.s/ with ''
+        namer -f poi -m w.s
+
+    #find files match /p(o+)i/ and replace /p(o+)i/ with '$1'(content matched in the brackets)
+        namer -m 'p(o+)i' -r '$1'
+
+    #find files match /aaaaaa/i(ignore case) and replace /aaaaaa/i with 'b'
+        namer -m '/aaaaaa/i' -r b
+
+    #find some png files and re-number them
+        namer -m '.png$' -r '#COUNTER.png'
+        
+
 ```
 
-### Examples:
-
-```shell
-namer -m w.s -f poi                        #remove string not matches /w.s/ in which file name matches /poi/
-namer -f "p(o+)i" -r "$1"                  #(special replacement patterns)cut "p" and "i" sticks to the "o"s for files that can be matched
-namer -f /aaaaaa/i -r b                    #(ignore case)replace /aaaaaa/i mode to "b" for files that can be matched
-namer -f some.*pics\\.png -r "#COUNTER.png"#change the names to numbers for some png files that can be matched
-```
