@@ -10,26 +10,23 @@ npm i file-namer -g
 ## Usage
 
 ```plain
-Usage: namer [options]
-
-  Options:
-
-    -R, --recursive              Match child directories recursively
-    -f, --filter <regexp>        Filter for finding target files (default: same as --match)
-    -r, --replace <replacement>  Replacement string (default: )
-    -m, --match <regexp>         Regexp for matching strings to be replaced (default: /.*/)
-    --keep-order                 Do not reorder the file list. By default the namer will reorder file names by their length.
-    --flat                       Show flat file list instead of tree view.
-    -y, --yes                    Do not ask for confirmation
-    --no-folder                  Do not change folder's name.
-    --no-file                    Do not change file's name.
-    -h, --help                   output usage information
+Options:
+  -R, --recursive              Match child directories recursively
+  -f, --filter <regexp>        Filter for finding target files (default: same as --match)
+  -r, --replace <replacement>  Replacement string (default: "")
+  -m, --match <regexp>         Regexp for matching strings to be replaced (default: "/.*/")
+  --keep-order                 Do not reorder the file list. By default the namer will reorder file names by their length.
+  --flat                       Show flat file list instead of tree view.
+  -y, --yes                    Do not ask for confirmation
+  --no-folder                  Do not change folder's name.
+  --no-file                    Do not change file's name.
+  -h, --help                   output usage information
 
 
  This tool replaces matches to replacements on filtered files
-    Regexps in the parameters can be with or without // surrounded(This can be used when you need regexp flags "i" or "g").
+    Regexps in the parameters can be with or without "/" surrounded(This can be used when you need regexp flags "i" or "g").
     You may need to add "\" before some signs in your command environment.
-    You may need to surround the regexp with '' if special sign appears.
+    You may need to surround the regexp with '' if special sign appears.( DO NOT USE "", use '' instead)
     The replacement will become the second parameter of 'string.replace' function in javascript. So several special signs can be used.
 
   Special javascript replacement patterns
@@ -54,6 +51,4 @@ Usage: namer [options]
 
     #find some png files and re-number them
         namer -m '.png$' -r '#COUNTER.png'
-    
-
 ```
