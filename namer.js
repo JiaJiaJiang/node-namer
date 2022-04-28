@@ -4,6 +4,7 @@ var commander=require("commander");
 const fs = require('fs');
 const readline = require('readline');
 const Path = require('path');
+const ProgressBar = require('progress');
 
 commander
 .option('-R, --recursive', 'Match child directories recursively')
@@ -11,6 +12,7 @@ commander
 .option('-r, --replace <replacement>', 'Replacement string',String,'')
 .option('-m, --match <regexp>', 'Regexp for matching strings to be replaced',parseRegExp,"/.*/")
 .option('--keep-order', 'Do not reorder the file list. By default the namer will reorder file names by their length.')
+.option('--flat', 'Show flat file list instead of tree view.',false)
 .option('-y, --yes', 'Do not ask for confirmation')
 .option('--no-folder', 'Do not change folder\'s name.',false)
 .option('--no-file', 'Do not change file\'s name.',false);
@@ -19,9 +21,9 @@ console.log(
 `
 
  This tool replaces matches to replacements on filtered files
-    Regexps in the parameters can be with or without // surrounded(This can be used when you need regexp flags "i" or "g").
+    Regexps in the parameters can be with or without "/" surrounded(This can be used when you need regexp flags "i" or "g").
     You may need to add "\\" before some signs in your command environment.
-    You may need to surround the regexp with \'\' if special sign appears.
+    You may need to surround the regexp with \'\' if special sign appears.( DO NOT USE "", use '' instead)
     The replacement will become the second parameter of \'string.replace\' function in javascript. So several special signs can be used.
 
   Special javascript replacement patterns
@@ -57,6 +59,7 @@ commander.parse(process.argv);
 if(commander.filter===undefined)commander.filter=commander.match;
 console.log('filter:',commander.filter,"  match:",commander.match,"  replacement:",commander.replace);
 
+const flatList=commander.flat;
 var replaceList=[];
 var counter=0;
 var workRoot='.';
@@ -72,10 +75,19 @@ if(commander.yes!==true){
 	  input: process.stdin,
 	  output: process.stdout
 	});
-	rl.question('Confirm?    (control+c to exit)\n',()=> {
-		startReplace();
-		rl.close();
-	});
+	function ask(){
+		rl.question('Confirm?  y/yes (control+c or "no" to exit)\n',(input)=> {
+			if(input==='y'||input==='yes'){
+				startReplace();
+			}else if(!(input==='n'||input==='no')){
+				console.log(`unrecogonized answer "${input}"`);
+				ask();
+				return;
+			}
+			rl.close();
+		});
+	}
+	ask();
 }else{startReplace();}
 
 //funcitons
@@ -92,7 +104,7 @@ function findIn(dir){
 		sort(dirList);
 	}
 	let r;
-	let tabs=(r=dir.match(new RegExp(`\\${Path.sep}`,'g')))?r.length:0;
+	let tabs=(r=dir.match(new RegExp(`/`,'g')))?r.length:0;
 	let dirLogged=false;
 	dirList.forEach(function(name){
 		if(name==='.'||name==='..')return;
@@ -108,11 +120,12 @@ function findIn(dir){
 			counter++;
 			var newName=name.replace(commander.match,commander.replace).replace(/\#COUNTER/g,counter);
 			if(name!==newName){
+				let indent=flatList?'':('|   '.repeat(tabs));
 				if(!dirLogged){
-					console.log('|   '.repeat(tabs)+'[Dir: '+dir+']');
+					console.log(indent+'[Dir: '+dir+']');
 					dirLogged=true;
 				}
-				console.log(`${'|   '.repeat(tabs+1)}<${name}>`,`\n${'|   '.repeat(tabs+1)} → `+newName);
+				console.log(`${indent}|   <${name}>`,`\n${indent}|    → `+newName);
 				replaceList.push([Path.join(dir,name),Path.join(dir,newName)]);
 			}
 		}
@@ -153,10 +166,13 @@ function parseRegExp(str){
 }
 function startReplace(){
 	var changed=0,failed=[],skiped=0;
+	var bar = new ProgressBar('Renaming [:bar] :current/:total', { total: replaceList.length,width:999 });
+	let updateBar=()=>bar.tick({current:changed+failed.length+skiped});
 	//resort the list to rename child dirs first
 	replaceList.sort((a,b)=>b[0].length-a[0].length).forEach(function(names){
 		if(names[0]===names[1]){
 			skiped++;
+			updateBar();
 			return;
 		}
 		try{
@@ -166,6 +182,7 @@ function startReplace(){
 			failed.push([names[0],names[1]]);
 			console.error(e.message);
 		}
+		updateBar();
 	});
 	console.log("Finished.");
 	if(changed)console.log(changed+" changed");

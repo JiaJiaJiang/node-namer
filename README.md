@@ -10,16 +10,20 @@ npm i file-namer -g
 ## Usage
 
 ```plain
-Options:
-  -R, --recursive              Match child directories recursively
-  -f, --filter <regexp>        Filter for finding target files (default: same as --match)
-  -r, --replace <replacement>  Replacement string (default: "")
-  -m, --match <regexp>         Regexp for matching strings to be replaced (default: "/.*/")
-  --keep-order                 Do not reorder the file list. By default the namer will reorder file names by their length.
-  -y, --yes                    Do not ask for confirmation
-  --no-folder                  Do not change folder's name.
-  --no-file                    Do not change file's name.
-  -h, --help                   output usage information
+Usage: namer [options]
+
+  Options:
+
+    -R, --recursive              Match child directories recursively
+    -f, --filter <regexp>        Filter for finding target files (default: same as --match)
+    -r, --replace <replacement>  Replacement string (default: )
+    -m, --match <regexp>         Regexp for matching strings to be replaced (default: /.*/)
+    --keep-order                 Do not reorder the file list. By default the namer will reorder file names by their length.
+    --flat                       Show flat file list instead of tree view.
+    -y, --yes                    Do not ask for confirmation
+    --no-folder                  Do not change folder's name.
+    --no-file                    Do not change file's name.
+    -h, --help                   output usage information
 
 
  This tool replaces matches to replacements on filtered files
@@ -53,4 +57,3 @@ Options:
     
 
 ```
-

@@ -26,6 +26,7 @@
   },
   "homepage": "https://github.com/JiaJiaJiang/node-namer#readme",
   "dependencies": {
-    "commander": "^2.15.1"
+    "commander": "^2.15.1",
+    "progress": "^2.0.3"
   }
 }
