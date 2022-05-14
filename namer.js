@@ -82,7 +82,7 @@ var counter=0;
 var workRoot='.';
 //find files
 findIn(workRoot);
-console.log(`\n${counter} files found${!options.list?", "+replaceList.length+" names will be changed.":'.'}`);
+console.log(`\n${counter} targets found${!options.list?", "+replaceList.length+" names will be changed.":'.'}`);
 if(replaceList.length===0 || options.list)process.exit(0);//no file to be renamed or in list mode
 if(options.yes!==true){
 	const rl = readline.createInterface({
